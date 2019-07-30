@@ -1,0 +1,239 @@
+//complete source code of a payload generator, every variable is self explanatory
+
+        public  bool Generate()
+        {
+
+            string Payload = null;
+            string host = p_HostName.Text;
+            #region Check for Errors
+            if ((p_HostName.Text == "") || (p_HostName.Text == null))
+            {
+               MessageBox .Show("Hostname error. Please use a valid hostname", "", MessageBoxButtons.OK, MessageBoxIcon.Error);
+
+                return false;
+            }
+            #endregion
+            #region Make the Payload
+            #region Normal Inject
+
+            if (p_InjectionType.Text == "Normal")
+            {
+              
+                if (p_NoQuery.Checked == true)
+                {
+                    Payload += string.Concat(p_RequestType.Text, " [host_port] [protocol][crlf] Host: ", host);
+                }
+                else if (p_FrontQuery.Checked == true)
+                {
+                    Payload += string.Concat(p_RequestType.Text, " " + host, " @[host_port] [protocol][crlf] Host: ", host);
+                }
+                else if (p_BackQuery.Checked == true)
+                {
+                    Payload += string.Concat(p_RequestType.Text, " [host_port]@", host, " [protocol][crlf] Host: ", host);
+
+                }
+                if ((!(bool)p_OnlineHost.Checked) && (!(bool)p_ForwardHost.Checked) && (!(bool)p_ForHost.Checked) && (!(bool)p_KeepAlive.Checked) && (!(bool)p_UserAgent.Checked))
+                {
+                    Payload += string.Concat("[crlf][crlf]");
+                }
+                if (p_OnlineHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Online-Host: " + host;
+                }
+                if (p_ForwardHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forward-Host: " + host;
+                }
+                if (p_ForHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forwarded-For: " + host;
+                }
+                if (p_KeepAlive.Checked == true)
+                {
+                    Payload += "[crlf]Connection: Keep-Alive";
+                }
+                if (p_UserAgent.Checked == true)
+                {
+                    Payload += "[crlf]User-Agent: [ua]";
+                }
+                if ((p_OnlineHost.Checked == true) || (p_ForwardHost.Checked == true) || (p_ForHost.Checked == true) || (p_KeepAlive.Checked == true) || (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf]";
+                }
+            }
+            #endregion
+            #region Front Inject
+
+            else if (p_InjectionType.Text == "Front")
+            {
+
+                Payload += p_RequestType.Text + " http://" + host + "/ HTTP/1.1[clrf]Host:" + host;
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == false) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf][crlf]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == false) && (p_Split.Checked == true))
+                {
+                    Payload += "[crlf][crlf][split]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == true) && (p_BackQuery.Checked == false) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf][crlf]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == true) && (p_BackQuery.Checked == false) && (p_Split.Checked == true))
+                {
+                    Payload += "[crlf][crlf][split]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == true) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf][crlf]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == false) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == true) && (p_Split.Checked == true))
+                {
+                    Payload += "[crlf][crlf][split]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == true) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == false) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == true) && (p_FrontQuery.Checked == true) && (p_BackQuery.Checked == false) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == true) && (p_FrontQuery.Checked == true) && (p_BackQuery.Checked == false) && (p_Split.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf][split]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == true) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == true) && (p_Split.Checked == false))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if ((p_OnlineHost.Checked == false) && (p_ForwardHost.Checked == false) && (p_ForHost.Checked == false) && (p_KeepAlive.Checked == false) && (p_UserAgent.Checked == false) && (p_DualConnect.Checked == true) && (p_FrontQuery.Checked == false) && (p_BackQuery.Checked == true) && (p_Split.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf][split]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if (p_OnlineHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Online-Host: " + host;
+                }
+                if (p_ForwardHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forward-Host: " + host;
+                }
+                if (p_ForHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forwarded-For: " + host;
+                }
+                if (p_KeepAlive.Checked == true)
+                {
+                    Payload += "[crlf]Connection: Keep-Alive";
+                }
+                if (p_UserAgent.Checked == true)
+                {
+                    Payload += "[crlf]User-Agent: [ua]";
+                }
+                if ((p_DualConnect.Checked == false) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == false) & (p_Split.Checked == false) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == false) & (p_FrontQuery.Checked == true) & (p_BackQuery.Checked == false) & (p_Split.Checked == false) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == false) & (p_FrontQuery.Checked == true) & (p_BackQuery.Checked == false) & (p_Split.Checked == true) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf][split]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == false) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == true) & (p_Split.Checked == false) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == true) & (p_Split.Checked == true) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == false) & (p_Split.Checked == true) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf][split]CONNECT [host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == true) & (p_BackQuery.Checked == false) & (p_Split.Checked == false) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == true) & (p_BackQuery.Checked == false) & (p_Split.Checked == true) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf][split]CONNECT " + host + "@[host_port] [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == true) & (p_Split.Checked == false) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+                if ((p_DualConnect.Checked == true) & (p_FrontQuery.Checked == false) & (p_BackQuery.Checked == true) & (p_Split.Checked == true) && (p_OnlineHost.Checked == true) | (p_ForwardHost.Checked == true) | (p_ForHost.Checked == true) | (p_KeepAlive.Checked == true) | (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol][crlf][crlf][split]CONNECT [host_port]@" + host + " [protocol][crlf][crlf]";
+                }
+            }
+            #endregion
+            #region Back Inject
+
+            else if (p_InjectionType.Text == "Back")
+            {
+                if ((p_FrontQuery.Checked == false) && (p_BackQuery.Checked == false))
+                {
+                    Payload += "CONNECT [host_port] HTTP/1.1[crlf][crlf]" + p_RequestType.Text + " http://" + host + "/ [protocol][crlf]Host: " + host;
+                }
+                if ((p_FrontQuery.Checked == true) && (p_BackQuery.Checked == false))
+                {
+                    Payload += "CONNECT " + host + "@[host_port] HTTP/1.1[crlf][crlf]" + p_RequestType.Text + " http://" + host + "/ [protocol][crlf]Host: " + host;
+                }
+                if ((p_FrontQuery.Checked == false) && (p_BackQuery.Checked == true))
+                {
+                    Payload += "CONNECT [host_port]@" + host + " HTTP/1.1[crlf][crlf]" + p_RequestType.Text + " http://" + host + "/ [protocol][crlf]Host: " + host;
+                }
+                if ((!(bool)p_OnlineHost.Checked) && (!(bool)p_ForwardHost.Checked) && (!(bool)p_ForHost.Checked) && (!(bool)p_KeepAlive.Checked) && (!(bool)p_UserAgent.Checked))
+                {
+                    Payload += string.Concat("[crlf][crlf]");
+                }
+                if (p_OnlineHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Online-Host: " + host;
+                }
+                if (p_ForwardHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forward-Host: " + host;
+                }
+                if (p_ForHost.Checked == true)
+                {
+                    Payload += "[crlf]X-Forwarded-For: " + host;
+                }
+                if (p_KeepAlive.Checked == true)
+                {
+                    Payload += "[crlf]Connection: Keep-Alive";
+                }
+                if (p_UserAgent.Checked == true)
+                {
+                    Payload += "[crlf]User-Agent: [ua]";
+                }
+                if (p_DualConnect.Checked == true)
+                {
+                    Payload += "[crlf]CONNECT [host_port] [protocol]";
+                }
+                if ((p_OnlineHost.Checked == true) || (p_ForwardHost.Checked == true) || (p_ForHost.Checked == true) || (p_KeepAlive.Checked == true) || (p_UserAgent.Checked == true))
+                {
+                    Payload += "[crlf][crlf]";
+                }
+
+            }
+            if ((p_protocl.Text != "") || (p_protocl.Text != "http (default)"))
+            {
+                if ((p_protocl.Text != "http (default)"))
+                {
+                    Payload = Payload.Replace("http", p_protocl.Text.ToLower());
+                }
+            //    Payload.Replace("HTTP", p_protocl.Text.ToUpper());
+            }
+            #endregion
+            #endregion
+            final_payload = Payload;
+            return true;
+        }
