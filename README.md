@@ -1,2 +1,3 @@
-# Respite, the custom http injector.
-Because no one has done yet, I offer a source code of my very old HTTP Injector. The code structure is not very clean so you might need to know some basic C# stuff.
+# https://github.com/Alizer55/respite-http-injector#respite-http-injector
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+this project is abandoned, go to the link above to get the new source code
